@@ -84,6 +84,8 @@ Schema: `agents/schemas/architect-output.json`
 ```json
 {
   "problem": "One paragraph. What are we solving and why.",
+  "quality_requirements": ["e.g. high throughput, maintainability over speed"],
+  "constraints": ["e.g. must use PostgreSQL", "team of 2, 2-week deadline"],
   "components": [
     {
       "name": "ComponentName",
