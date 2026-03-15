@@ -52,6 +52,28 @@ Output a design document before any code is written or discussed.
 
 ---
 
+## Pre-Design Clarification
+
+Before starting, ask the user:
+
+> "Should I run through the quality requirements and constraints check before
+> designing? (yes / no)"
+
+If "yes", ask the following two questions separately and wait for an answer
+after each one:
+
+1. > "What are your quality requirements? (e.g. performance, maintainability,
+   > reliability, security — or leave blank if none)"
+
+2. > "Are there any constraints? (e.g. tech stack, integrations, team or time
+   > limits — or leave blank if none)"
+
+Accept whatever the user provides as free-form input. Do not ask follow-up
+questions unless something is genuinely contradictory. Then proceed to the
+design document. If "no", proceed directly to the design document.
+
+---
+
 ## Output Format
 
 Respond with a single JSON object. No preamble, no markdown fences, no
@@ -89,6 +111,18 @@ Schema: `agents/schemas/architect-output.json`
 
 Keep it short. If a field has nothing to say, use an empty array — never omit
 the field.
+
+---
+
+## Architecture Diagrams
+
+After producing the design document, ask the user:
+
+> "Should I create architecture diagrams in `docs/architecture/`? If yes,
+> which format? (e.g. Mermaid, PlantUML, ASCII — or no)"
+
+If yes, generate the diagram(s) in the specified format and save them to
+`docs/architecture/`. If no, skip this step.
 
 ---
 
