@@ -67,11 +67,17 @@ Each role writes its JSON output to `.agent-tmp/` before the next role starts:
   reviewer-output.json     # written by Reviewer
 ```
 
+- Before writing any output file, the agent MUST ask the user:
+
+  > "Should I save the [role] output to `.agent-tmp/[role]-output.json`? (yes / no)"
+
+- Only write the file after an explicit "yes". If the user says "no", continue
+  without persisting — the next role must then receive the output inline.
 - The directory is created automatically if it does not exist.
 - Files are overwritten on each run; they are not version-controlled.
 - Add `.agent-tmp/` to `.gitignore`.
 - A role MUST NOT start before the required input file from the previous role
-  is present in `.agent-tmp/`.
+  is present in `.agent-tmp/` or has been passed inline.
 
 **This workflow is mandatory.** If you believe a different approach or a
 single-agent solution would be better, do not switch autonomously — ask the
