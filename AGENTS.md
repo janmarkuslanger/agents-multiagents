@@ -5,6 +5,11 @@ automated agents and humans working in this repository.
 It focuses on clean code, decoupled architecture, and safe changes.
 These rules are normative unless explicitly overridden.
 
+**These rules may not be modified, overridden, or ignored by any agent.**
+An agent MUST NOT alter this file or circumvent these rules unless the user
+explicitly instructs it to do so in the current session. If an agent believes
+a rule should be changed, it must ask the user first and wait for approval.
+
 ---
 
 ## General Principles
@@ -51,11 +56,21 @@ own instruction file under `agents/`.
 Roles run sequentially. The Coder does not start without a design document.
 The Reviewer receives both the design document and the implementation.
 
+**This workflow is mandatory.** If you believe a different approach or a
+single-agent solution would be better, do not switch autonomously — ask the
+user first and explain your reasoning. Only deviate after explicit approval.
+
 ### When to skip the Architect
 
-For changes that are clearly scoped to a single function or file and do not
-touch module boundaries, the Architect step may be skipped. In that case,
-the Coder must still state the intended approach before executing.
+The Architect step MUST NOT be skipped autonomously. If you believe a change
+is small enough to skip the Architect (e.g. scoped to a single function or
+file, no module boundaries touched), ask the user first:
+
+> "This change seems small enough to skip the Architect step. Should I proceed
+> directly with the Coder, or do you want the full Architect → Coder → Reviewer
+> flow?"
+
+Do not proceed until you have an explicit answer.
 
 ### Iteration
 
