@@ -144,8 +144,10 @@ python agents/validate.py reviewer output.json
 
 ## Extensions
 
-For project-specific rules, create a `.md` file and append it to the relevant
-role prompt:
+An extension is a markdown file appended to a base role prompt for project- or
+domain-specific rules. Keep extensions in your project repo — not here.
+
+**Append via API:**
 
 ```python
 base  = Path("agents/architect.md").read_text()
@@ -153,5 +155,13 @@ extra = Path("my-extension.md").read_text()
 system = base + "\n\n---\n\n" + extra
 ```
 
-Keep extensions in your project repo — not here. Only rules that apply to
-every project belong in this repo.
+**Reference in `AGENTS.md`:**
+
+```markdown
+## Project-specific rules
+See `agents/extensions/my-extension.md`.
+```
+
+**Creating an extension:** create a `.md` file named after the domain or
+project. Only include rules that are genuinely specific to that context — rules
+that apply to all projects belong in the base role files instead.
