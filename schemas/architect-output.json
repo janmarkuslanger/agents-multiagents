@@ -1,0 +1,77 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "architect-output",
+  "type": "object",
+  "required": ["problem", "components", "data_flow", "decisions", "open_questions", "assumptions"],
+  "additionalProperties": false,
+  "properties": {
+    "problem": {
+      "type": "string",
+      "minLength": 1,
+      "description": "One paragraph describing what is being solved and why."
+    },
+    "components": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["name", "responsibility", "interface"],
+        "additionalProperties": false,
+        "properties": {
+          "name": { "type": "string", "minLength": 1 },
+          "responsibility": {
+            "type": "string",
+            "minLength": 1,
+            "description": "One sentence describing what this component does."
+          },
+          "interface": {
+            "type": "array",
+            "items": { "type": "string" },
+            "description": "Public methods, functions, or endpoints exposed by this component."
+          }
+        }
+      }
+    },
+    "data_flow": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["use_case", "steps"],
+        "additionalProperties": false,
+        "properties": {
+          "use_case": { "type": "string", "minLength": 1 },
+          "steps": {
+            "type": "array",
+            "items": { "type": "string" },
+            "minItems": 1
+          }
+        }
+      }
+    },
+    "decisions": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["decision", "reason", "alternatives"],
+        "additionalProperties": false,
+        "properties": {
+          "decision": { "type": "string", "minLength": 1 },
+          "reason": { "type": "string", "minLength": 1 },
+          "alternatives": {
+            "type": "array",
+            "items": { "type": "string" }
+          }
+        }
+      }
+    },
+    "open_questions": {
+      "type": "array",
+      "items": { "type": "string" },
+      "description": "Anything unclear, unvalidated, or potentially problematic."
+    },
+    "assumptions": {
+      "type": "array",
+      "items": { "type": "string" },
+      "description": "What was assumed to be true when producing this design."
+    }
+  }
+}

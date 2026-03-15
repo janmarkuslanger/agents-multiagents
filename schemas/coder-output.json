@@ -1,0 +1,64 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "coder-output",
+  "type": "object",
+  "required": ["files", "tests", "deviations_from_design", "open_questions"],
+  "additionalProperties": false,
+  "properties": {
+    "files": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["path", "content"],
+        "additionalProperties": false,
+        "properties": {
+          "path": {
+            "type": "string",
+            "minLength": 1,
+            "description": "Relative path from repository root."
+          },
+          "content": {
+            "type": "string",
+            "description": "Full file content as a string."
+          }
+        }
+      }
+    },
+    "tests": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["path", "content"],
+        "additionalProperties": false,
+        "properties": {
+          "path": { "type": "string", "minLength": 1 },
+          "content": { "type": "string" }
+        }
+      }
+    },
+    "deviations_from_design": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["component", "deviation", "reason"],
+        "additionalProperties": false,
+        "properties": {
+          "component": { "type": "string", "minLength": 1 },
+          "deviation": {
+            "type": "string",
+            "description": "What differs from the design document."
+          },
+          "reason": {
+            "type": "string",
+            "description": "Why this deviation was necessary."
+          }
+        }
+      }
+    },
+    "open_questions": {
+      "type": "array",
+      "items": { "type": "string" },
+      "description": "Anything requiring Architect clarification before continuing."
+    }
+  }
+}

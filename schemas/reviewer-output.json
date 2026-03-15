@@ -1,0 +1,68 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "reviewer-output",
+  "type": "object",
+  "required": ["verdict", "critical_issues", "suggestions", "notes", "design_gaps"],
+  "additionalProperties": false,
+  "properties": {
+    "verdict": {
+      "type": "string",
+      "enum": ["APPROVED", "APPROVED_WITH_NOTES", "CHANGES_REQUESTED"],
+      "description": "APPROVED only if critical_issues is empty."
+    },
+    "critical_issues": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["file", "line", "issue", "category"],
+        "additionalProperties": false,
+        "properties": {
+          "file": {
+            "type": "string",
+            "description": "Relative path from repository root."
+          },
+          "line": {
+            "type": ["integer", "null"],
+            "description": "Line number, or null if file-wide or cross-cutting."
+          },
+          "issue": {
+            "type": "string",
+            "minLength": 1,
+            "description": "What is wrong and why it must be fixed."
+          },
+          "category": {
+            "type": "string",
+            "enum": ["correctness", "architecture", "safety", "testing"]
+          }
+        }
+      }
+    },
+    "suggestions": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["file", "line", "suggestion"],
+        "additionalProperties": false,
+        "properties": {
+          "file": { "type": "string" },
+          "line": { "type": ["integer", "null"] },
+          "suggestion": {
+            "type": "string",
+            "minLength": 1,
+            "description": "Non-blocking improvement worth considering."
+          }
+        }
+      }
+    },
+    "notes": {
+      "type": "array",
+      "items": { "type": "string" },
+      "description": "Observations that don't require action."
+    },
+    "design_gaps": {
+      "type": "array",
+      "items": { "type": "string" },
+      "description": "Anything missing or ambiguous in the design document itself."
+    }
+  }
+}
