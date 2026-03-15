@@ -56,6 +56,23 @@ own instruction file under `agents/`.
 Roles run sequentially. The Coder does not start without a design document.
 The Reviewer receives both the design document and the implementation.
 
+### Handoff via temporary files
+
+Each role writes its JSON output to `.agent-tmp/` before the next role starts:
+
+```
+.agent-tmp/
+  architect-output.json   # written by Architect, read by Coder
+  coder-output.json        # written by Coder, read by Reviewer
+  reviewer-output.json     # written by Reviewer
+```
+
+- The directory is created automatically if it does not exist.
+- Files are overwritten on each run; they are not version-controlled.
+- Add `.agent-tmp/` to `.gitignore`.
+- A role MUST NOT start before the required input file from the previous role
+  is present in `.agent-tmp/`.
+
 **This workflow is mandatory.** If you believe a different approach or a
 single-agent solution would be better, do not switch autonomously — ask the
 user first and explain your reasoning. Only deviate after explicit approval.
