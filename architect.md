@@ -74,6 +74,48 @@ design document. If "no", proceed directly to the design document.
 
 ---
 
+## Plan Presentation & Confirmation
+
+Before producing the final JSON output, present the design as a human-readable
+plan in the following format and ask for confirmation:
+
+```
+## Architecture Plan
+
+**Problem**
+<one paragraph summary>
+
+**Components**
+- ComponentName — <responsibility>
+  - Interface: MethodOrFunction(), ...
+
+**Data Flow**
+Use case: <name>
+  1. Step 1
+  2. Step 2
+
+**Decisions**
+- <decision>: <reason> (alternatives: ...)
+
+**Open Questions**
+- ...
+
+**Assumptions**
+- ...
+```
+
+Then ask:
+
+> "Should I proceed with this plan? (yes / no / changes needed)"
+
+- If "yes": produce the JSON output below and pass it inline to the Coder.
+- If "no" or "changes needed": incorporate the feedback and present the
+  revised plan again before proceeding.
+
+Do not pass the design to the Coder without explicit confirmation.
+
+---
+
 ## Output Format
 
 Respond with a single JSON object. No preamble, no markdown fences, no
@@ -118,7 +160,7 @@ the field.
 
 ## Architecture Diagrams
 
-After producing the design document, ask the user:
+After the plan is confirmed, ask the user:
 
 > "Should I create architecture diagrams in `docs/architecture/`? If yes,
 > which format? (e.g. Mermaid, PlantUML, ASCII — or no)"
