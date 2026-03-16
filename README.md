@@ -11,7 +11,6 @@ agents-multiagent/
   architect.md           # Architect role & output schema
   coder.md               # Coder role & output schema
   reviewer.md            # Reviewer role & output schema
-  validate.py            # Validates JSON outputs against schemas
   schemas/
     architect-output.json
     coder-output.json
@@ -79,68 +78,6 @@ and applies the Architect → Coder → Reviewer flow.
 
 ---
 
-## Usage with the API
-
-```python
-from pathlib import Path
-from agents.validate import parse_agent_response, validate_output
-
-def call_claude(system: str, user: str) -> str:
-    # your Anthropic API call here
-    ...
-
-architect_prompt = Path("agents/architect.md").read_text()
-coder_prompt     = Path("agents/coder.md").read_text()
-reviewer_prompt  = Path("agents/reviewer.md").read_text()
-
-requirements = "Your feature description here."
-
-# Step 1: Architect
-arch_raw     = call_claude(system=architect_prompt, user=requirements)
-arch_output  = parse_agent_response(arch_raw)
-errors       = validate_output("architect", arch_output)
-if errors:
-    raise ValueError(f"Architect output invalid: {errors}")
-
-# Step 2: Coder
-coder_raw    = call_claude(
-    system=coder_prompt,
-    user=f"Design document:\n{arch_raw}\n\nImplement this."
-)
-coder_output = parse_agent_response(coder_raw)
-errors       = validate_output("coder", coder_output)
-if errors:
-    raise ValueError(f"Coder output invalid: {errors}")
-
-# Step 3: Reviewer
-reviewer_raw    = call_claude(
-    system=reviewer_prompt,
-    user=f"Design:\n{arch_raw}\n\nImplementation:\n{coder_raw}\n\nReview this."
-)
-reviewer_output = parse_agent_response(reviewer_raw)
-errors          = validate_output("reviewer", reviewer_output)
-if errors:
-    raise ValueError(f"Reviewer output invalid: {errors}")
-
-if reviewer_output["verdict"] == "CHANGES_REQUESTED":
-    print("Changes required:", reviewer_output["critical_issues"])
-else:
-    print("Approved:", reviewer_output["verdict"])
-```
-
----
-
-## Validating outputs manually
-
-```bash
-pip install jsonschema
-
-python agents/validate.py architect output.json
-python agents/validate.py coder output.json
-python agents/validate.py reviewer output.json
-```
-
----
 
 ## Extensions
 
