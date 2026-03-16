@@ -109,8 +109,13 @@ Then ask:
 > "Should I proceed with this plan? (yes / no / changes needed)"
 
 - If "yes": produce the JSON output below and pass it inline to the Coder.
-- If "no" or "changes needed": incorporate the feedback and present the
-  revised plan again before proceeding.
+- If "no" or "changes needed": do not revise immediately. Instead, ask
+  targeted questions to understand what is wrong:
+  - What specifically does not fit?
+  - Is the problem statement wrong, a component missing, a boundary wrong,
+    or something else?
+  Wait for the answers, then present a revised plan. Repeat this
+  dialogue until the user confirms with "yes".
 
 Do not pass the design to the Coder without explicit confirmation.
 
