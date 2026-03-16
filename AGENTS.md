@@ -41,9 +41,9 @@ own instruction file under `agents/`.
 
 | Role | File | When to activate |
 |---|---|---|
-| Software Architect | `agents/architect.md` | New feature, new component, or any change that touches boundaries |
-| Coder | `agents/coder.md` | Implementation after a design document exists |
-| Reviewer | `agents/reviewer.md` | After implementation, before merge |
+| Software Architect | `architect.md` | New feature, new component, or any change that touches boundaries |
+| Coder | `coder.md` | Implementation after a confirmed design document exists |
+| Reviewer | `reviewer.md` | After implementation, before merge |
 
 ### Standard workflow
 
@@ -53,14 +53,16 @@ own instruction file under `agents/`.
 3. REVIEWER   →  review implementation against design document + requirements
 ```
 
-Roles run sequentially. The Coder does not start without a confirmed design
-document. The Reviewer receives both the design document and the implementation.
+Roles run sequentially. The Coder MUST NOT start before it has received the
+Architect's confirmed design document as inline JSON. The Reviewer receives
+both the confirmed design document and the Coder's implementation, both passed
+inline as JSON.
 
 ### Handoff
 
 Each role passes its JSON output inline to the next role. No files are written
-to disk. A role MUST NOT start before it has received the output of the
-previous role.
+to disk. A role MUST NOT start before it has received the inline JSON output of
+the previous role.
 
 **This workflow is mandatory.** If you believe a different approach or a
 single-agent solution would be better, do not switch autonomously — ask the
