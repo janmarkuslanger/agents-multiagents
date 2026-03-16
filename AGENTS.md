@@ -41,9 +41,9 @@ own instruction file under `agents/`.
 
 | Role | File | When to activate |
 |---|---|---|
-| Software Architect | `architect.md` | New feature, new component, or any change that touches boundaries |
-| Coder | `coder.md` | Implementation after a confirmed design document exists |
-| Reviewer | `reviewer.md` | After implementation, before merge |
+| Software Architect | `agents/architect.md` | New feature, new component, or any change that touches boundaries |
+| Coder | `agents/coder.md` | Implementation after a confirmed design document exists |
+| Reviewer | `agents/reviewer.md` | After implementation, before merge |
 
 ### Standard workflow
 

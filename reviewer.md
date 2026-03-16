@@ -59,7 +59,7 @@ requirements — not personal preference.
 Respond with a single JSON object. No preamble, no markdown fences, no
 explanation outside the JSON.
 
-Schema: `schemas/reviewer-output.json`
+Schema: `agents/schemas/reviewer-output.json`
 
 ```json
 {

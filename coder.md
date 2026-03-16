@@ -61,7 +61,7 @@ When done, pass your output as inline JSON to the Reviewer.
 Respond with a single JSON object. No preamble, no markdown fences, no
 explanation outside the JSON.
 
-Schema: `schemas/coder-output.json`
+Schema: `agents/schemas/coder-output.json`
 
 ```json
 {
