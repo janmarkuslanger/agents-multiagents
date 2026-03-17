@@ -23,7 +23,7 @@ Three specialized roles handle every non-trivial task.
 
 ## Pipeline
 
-```
+```text
 1. ARCHITECT  →  produce design document → present plan → wait for confirmation
 2. CODER      →  implement against confirmed design document
 3. REVIEWER   →  review implementation against design document + requirements
