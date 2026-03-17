@@ -25,15 +25,14 @@ agents-multiagent/
 ## How it works
 
 `AGENTS.md` contains immutable code rules. It does not define the pipeline.
-Instead, it loads the active workflow file:
+The pipeline is resolved by merging two files:
 
-```
-agents/extensions/workflow.md   ← project override (if it exists)
-agents/workflow.md              ← default fallback
-```
+- `agents/workflow.md` — always loaded as the default pipeline
+- `agents/extensions/workflow.md` — optional overlay, merged on top
 
-**The first file found wins.** You can completely replace the pipeline without
-touching any core file — just add `extensions/workflow.md` to your project.
+When the overlay exists, sections defined in it override the matching sections
+from the default. Sections absent from the overlay remain active from the
+default unchanged. The entire default is never replaced.
 
 ---
 
