@@ -48,7 +48,7 @@ Both are passed inline. Do not start before you have received both.
 
 ## Output
 
-Produce a single JSON object that conforms to `schemas/platform-engineer-output.json`.
+Produce a single JSON object that conforms to `agents/extensions/platform-engineer-output.json`.
 Pass this inline to the Reviewer.
 
 Do not write files to disk. Do not explain the JSON in prose — output only the
