@@ -36,27 +36,40 @@ a rule should be changed, it must ask the user first and wait for approval.
 
 ## Agent Roles & Workflow
 
-Three specialized roles handle every non-trivial task. Each role has its
+Four specialized roles handle every non-trivial task. Each role has its
 own instruction file under `agents/`.
 
 | Role | File | When to activate |
 |---|---|---|
 | Software Architect | `agents/architect.md` | New feature, new component, or any change that touches boundaries |
 | Coder | `agents/coder.md` | Implementation after a confirmed design document exists |
-| Reviewer | `agents/reviewer.md` | After implementation, before merge |
+| Platform Engineer | `agents/platform-engineer.md` | After implementation, when the change requires infra, deployment, or observability work |
+| Reviewer | `agents/reviewer.md` | After implementation (and after Platform Engineer if activated), before merge |
 
 ### Standard workflow
 
 ```
-1. ARCHITECT  →  produce design document → present plan → wait for confirmation
-2. CODER      →  implement against confirmed design document
-3. REVIEWER   →  review implementation against design document + requirements
+1. ARCHITECT          →  produce design document → present plan → wait for confirmation
+2. CODER              →  implement against confirmed design document
+3. PLATFORM ENGINEER  →  define infra, deployment, and observability (skip if no infra impact)
+4. REVIEWER           →  review implementation + infra against design document + requirements
 ```
 
 Roles run sequentially. The Coder MUST NOT start before it has received the
-Architect's confirmed design document as inline JSON. The Reviewer receives
-both the confirmed design document and the Coder's implementation, both passed
-inline as JSON.
+Architect's confirmed design document as inline JSON. The Platform Engineer
+receives both the confirmed design document and the Coder's implementation,
+both passed inline as JSON. If the Platform Engineer outputs `{ "skipped": true }`,
+proceed directly to the Reviewer. The Reviewer receives the confirmed design
+document, the Coder's implementation, and the Platform Engineer's output (or
+the skipped marker), all passed inline as JSON.
+
+### When to skip the Platform Engineer
+
+The Platform Engineer is skipped when the change has no infrastructure impact
+(pure application logic, no new services, no changed runtime dependencies, no
+deployment topology changes). The Platform Engineer itself decides whether to
+skip by outputting `{ "skipped": true, "reason": "..." }`. Do not pre-judge
+this — always activate the Platform Engineer and let it decide.
 
 ### Handoff
 

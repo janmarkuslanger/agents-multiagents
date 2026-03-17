@@ -7,13 +7,15 @@ Implements an Architect → Coder → Reviewer pipeline with structured JSON out
 
 ```
 agents-multiagent/
-  AGENTS.md              # Orchestration rules — link this to your project root
-  architect.md           # Architect role & output schema
-  coder.md               # Coder role & output schema
-  reviewer.md            # Reviewer role & output schema
+  AGENTS.md                       # Orchestration rules — link this to your project root
+  architect.md                    # Architect role & output schema
+  coder.md                        # Coder role & output schema
+  platform-engineer.md            # Platform Engineer role & output schema (optional step)
+  reviewer.md                     # Reviewer role & output schema
   schemas/
     architect-output.json
     coder-output.json
+    platform-engineer-output.json
     reviewer-output.json
 ```
 
@@ -53,14 +55,17 @@ git add agents && git commit -m "chore: update agents"
 ## Workflow
 
 ```
-1. ARCHITECT  →  reads requirements, produces JSON design document
-2. CODER      →  reads design document, produces JSON with files + tests
-3. REVIEWER   →  reads design + implementation, produces JSON verdict
+1. ARCHITECT          →  reads requirements, produces JSON design document
+2. CODER              →  reads design document, produces JSON with files + tests
+3. PLATFORM ENGINEER  →  reads design + implementation, produces JSON with infra/deployment/observability
+                          (outputs { "skipped": true } if no infra impact)
+4. REVIEWER           →  reads design + implementation + platform output, produces JSON verdict
 ```
 
 Roles run sequentially. The Coder does not start without a design document.
-If the Reviewer returns `CHANGES_REQUESTED`, the Coder fixes critical issues
-and the Reviewer re-reviews.
+The Platform Engineer always runs after the Coder and decides itself whether
+infra work is needed. If the Reviewer returns `CHANGES_REQUESTED`, the Coder
+fixes critical issues and the Reviewer re-reviews.
 
 The Architect step may be skipped for changes scoped to a single function or
 file that do not touch module boundaries.
