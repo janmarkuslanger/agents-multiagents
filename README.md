@@ -104,7 +104,7 @@ git commit -m "chore: add workflow extension"
 Only `## Roles`, `## Pipeline`, and `## Handoff` change. Everything else
 (Architect skip question, iteration, handoff format rules) stays from the base.
 
-```markdown
+````markdown
 ## Roles
 
 | Role               | File                       | When to activate                            |
@@ -116,7 +116,7 @@ Only `## Roles`, `## Pipeline`, and `## Handoff` change. Everything else
 
 ## Pipeline
 
-```
+```text
 1. ARCHITECT          →  design document (JSON) → wait for confirmation
 2. CODER              →  implementation (JSON)
 3. PLATFORM ENGINEER  →  infra + deployment (JSON), or { "skipped": true }
@@ -131,7 +131,7 @@ Only `## Roles`, `## Pipeline`, and `## Handoff` change. Everything else
   Platform Engineer's output (or skip marker)
 
 All handoffs are inline JSON. No files are written to disk.
-```
+````
 
 That's the entire extension file. The Architect skip question, iteration rules,
 and mandatory workflow note all come from the base automatically.
