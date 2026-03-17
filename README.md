@@ -17,10 +17,7 @@ agents-multiagent/
     coder-output.json
     reviewer-output.json
   extensions/
-    workflow-platform-engineer.example.md  # Example workflow override
-    role-template.md                       # Template for new roles
-    platform-engineer.md                   # Example: Platform Engineer role
-    platform-engineer-output.json          # Platform Engineer output schema
+    role-template.md     # Template for creating new roles
 ```
 
 ---
@@ -35,9 +32,8 @@ agents/extensions/workflow.md   ← project override (if it exists)
 agents/workflow.md              ← default fallback
 ```
 
-**The first file found wins.** This means you can completely replace the
-pipeline without touching any core file — just add `extensions/workflow.md`
-to your project.
+**The first file found wins.** You can completely replace the pipeline without
+touching any core file — just add `extensions/workflow.md` to your project.
 
 ---
 
@@ -93,9 +89,8 @@ of the submodule — git tracks it as a regular project file even though it sits
 inside the submodule directory.
 
 ```bash
-# Start from the Platform Engineer example
-cp agents/extensions/workflow-platform-engineer.example.md \
-   agents/extensions/workflow.md
+# Create your custom workflow
+touch agents/extensions/workflow.md
 
 # Track it in your project repo
 git add agents/extensions/workflow.md
@@ -104,52 +99,112 @@ git commit -m "chore: add custom workflow"
 
 `AGENTS.md` will load your file instead of the default `workflow.md`.
 
-Your `workflow.md` override defines everything: which roles exist, in what
-order, what each receives, and how to handle skip conditions. Refer to
-`agents/workflow.md` as the baseline and modify from there.
+Your override defines everything: which roles exist, in what order, what each
+receives, and how to handle skip conditions. Use `agents/workflow.md` as the
+baseline.
 
-**Worked example — adding a Platform Engineer:**
+**Example — inserting a Platform Engineer role:**
 
-The file `agents/extensions/workflow-platform-engineer.example.md` is a
-ready-to-use override that inserts a Platform Engineer between Coder and
-Reviewer:
+Suppose your project needs an infra review step after every implementation.
+Create `agents/extensions/workflow.md` with:
 
-```
-1. ARCHITECT          →  design document (JSON)
+```markdown
+# Workflow (project override)
+
+## Roles
+
+| Role               | File                                        | When to activate                           |
+|--------------------|---------------------------------------------|--------------------------------------------|
+| Software Architect | `agents/architect.md`                       | New feature or boundary change             |
+| Coder              | `agents/coder.md`                           | After confirmed design document            |
+| Platform Engineer  | `platform-engineer.md`                      | After Coder — self-skips if no infra impact|
+| Reviewer           | `agents/reviewer.md`                        | After Platform Engineer                    |
+
+## Pipeline
+
+1. ARCHITECT          →  design document (JSON) → wait for confirmation
 2. CODER              →  implementation (JSON)
 3. PLATFORM ENGINEER  →  infra + deployment + observability (JSON),
-                          or { "skipped": true } if no infra impact
+                          or { "skipped": true, "reason": "..." }
 4. REVIEWER           →  verdict (JSON)
+
+## Handoff
+
+- Coder receives: Architect's confirmed design document
+- Platform Engineer receives: design document + Coder's implementation
+- Reviewer receives: design document + Coder's implementation +
+  Platform Engineer's output (or skip marker)
+
+All handoffs are inline JSON. No files are written to disk.
+
+## Skip conditions
+
+The Platform Engineer always runs. It decides itself whether infra work is
+needed. Pass its skip marker to the Reviewer unchanged if it skips.
+
+## Iteration
+
+If the Reviewer returns CHANGES_REQUESTED, the Coder addresses critical issues.
+If infra issues are flagged, the Platform Engineer re-runs too. Then re-review.
 ```
 
-Copy it to activate:
-
-```bash
-cp agents/extensions/workflow-platform-engineer.example.md \
-   agents/extensions/workflow.md
-```
+This workflow requires a `platform-engineer.md` role file in your project.
+See Option B for how to create it.
 
 ---
 
-### Option B: Add a new role (without changing the pipeline file)
+### Option B: Create a new role
 
-If you only need to define a new role — and you'll wire it up manually in your
-workflow override — use the role template:
+Copy the template and fill it in:
 
 ```bash
-cp agents/extensions/role-template.md my-role.md
+cp agents/extensions/role-template.md platform-engineer.md
 ```
 
-Fill in: responsibilities, inputs, skip condition, output schema reference.
-Then reference the role in your `agents/extensions/workflow.md`.
+The template covers: responsibilities, inputs, skip condition, output schema
+reference, and constraints. A role file answers these questions:
 
-See `agents/extensions/platform-engineer.md` as a complete example.
+- What is this role responsible for?
+- What does it receive as input (which upstream role outputs)?
+- Under what condition does it self-skip?
+- What JSON does it output?
+
+**Example output schema** for an optional role (one that can skip itself):
+
+```json
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "oneOf": [
+    {
+      "type": "object",
+      "properties": {
+        "skipped": { "type": "boolean", "enum": [true] },
+        "reason":  { "type": "string" }
+      },
+      "required": ["skipped", "reason"],
+      "additionalProperties": false
+    },
+    {
+      "type": "object",
+      "properties": {
+        "summary":     { "type": "string" },
+        "infra_changes": { "type": "array", "items": { "type": "string" } },
+        "risks":       { "type": "array", "items": { "type": "string" } }
+      },
+      "required": ["summary", "infra_changes", "risks"],
+      "additionalProperties": false
+    }
+  ]
+}
+```
+
+Reference the schema file in the role's `## Output` section.
 
 ---
 
-### Option C: Append rules to an existing role (role extension)
+### Option C: Append rules to an existing role
 
-For project-specific rules that extend an existing role without replacing it
+For project-specific rules that extend a role without replacing it
 (framework conventions, naming rules, stack constraints):
 
 **Via API:**
@@ -165,19 +220,16 @@ system = base + "\n\n---\n\n" + extra
 ```markdown
 ## Role extensions
 
-The Coder appends rules from `agents-extensions/coder-django.md`.
+The Coder appends rules from `extensions/coder-django.md`.
 ```
 
 ---
 
-## Design rules for custom workflow files
-
-Keep your workflow override consistent with the base:
+## Design rules for workflow overrides
 
 - Declare all roles in a table with file paths and activation conditions
 - Define the full pipeline as a numbered list
 - Specify exactly what each role receives as input
-- Define skip conditions explicitly — every optional role must self-skip with
-  `{ "skipped": true, "reason": "..." }`
-- State that the workflow is mandatory and how to deviate (ask the user)
+- Every optional role must self-skip with `{ "skipped": true, "reason": "..." }`
+- State that the workflow is mandatory; cover how to deviate (ask the user)
 - Cover the Architect skip question and the iteration/re-review rule
