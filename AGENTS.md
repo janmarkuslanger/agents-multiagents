@@ -36,19 +36,18 @@ a rule should be changed, it must ask the user first and wait for approval.
 
 ## Agent Roles & Workflow
 
-**Load the active workflow file before doing anything else.**
+**Load the workflow before doing anything else.**
 
-Workflow files are loaded in this order — the first one found wins:
+1. Always read `agents/workflow.md` — this is the base.
+2. If `agents/extensions/workflow.md` exists, read it too.
+   For every section that appears in both files, the extension wins.
+   Sections only present in the base remain active unchanged.
 
-1. `agents/extensions/workflow.md` — project-specific override (highest priority)
-2. `agents/workflow.md` — default workflow (fallback)
+Follow the merged result for the entire session.
+If `agents/workflow.md` does not exist, stop and ask the user.
 
-Read the active workflow file now and follow it for the entire session.
-If neither file exists, stop and ask the user.
-
-The workflow file defines which roles exist, in what order they run, and how
-outputs are handed off between them. All pipeline decisions (role order, skip
-conditions, handoff format) are defined there, not here.
+The workflow files define which roles exist, in what order they run, and how
+outputs are handed off. All pipeline decisions are defined there, not here.
 
 ---
 
