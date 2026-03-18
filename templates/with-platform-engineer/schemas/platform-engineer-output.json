@@ -1,0 +1,146 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "platform-engineer-output",
+  "oneOf": [
+    {
+      "type": "object",
+      "description": "Emitted when the design has no infrastructure impact.",
+      "required": ["skipped", "reason"],
+      "additionalProperties": false,
+      "properties": {
+        "skipped": { "type": "boolean", "enum": [true] },
+        "reason":  { "type": "string", "minLength": 1 }
+      }
+    },
+    {
+      "type": "object",
+      "description": "Full infra plan emitted when infrastructure changes are required.",
+      "required": ["summary", "environment_requirements", "iac_changes", "cicd_changes", "secrets", "risks"],
+      "additionalProperties": false,
+      "properties": {
+        "summary": {
+          "type": "string",
+          "minLength": 1,
+          "description": "One paragraph: what infrastructure work is needed and why."
+        },
+        "environment_requirements": {
+          "type": "array",
+          "description": "Resources that must exist before the application can run.",
+          "items": {
+            "type": "object",
+            "required": ["resource", "type", "reason", "manual_action_required"],
+            "additionalProperties": false,
+            "properties": {
+              "resource": {
+                "type": "string",
+                "description": "Name or identifier of the resource (e.g. 'orders-db', 'user-events-topic')."
+              },
+              "type": {
+                "type": "string",
+                "description": "Resource type (e.g. 'PostgreSQL database', 'Kafka topic', 'S3 bucket', 'IAM role')."
+              },
+              "reason": {
+                "type": "string",
+                "description": "Which component in the design document requires this resource."
+              },
+              "manual_action_required": {
+                "type": "boolean",
+                "description": "True if this resource cannot be provisioned automatically and requires manual intervention."
+              }
+            }
+          }
+        },
+        "iac_changes": {
+          "type": "array",
+          "description": "Infrastructure-as-code files that must be created or modified.",
+          "items": {
+            "type": "object",
+            "required": ["path", "action", "description"],
+            "additionalProperties": false,
+            "properties": {
+              "path": {
+                "type": "string",
+                "description": "Relative path to the IaC file (Terraform, Helm chart, Kubernetes manifest, etc.)."
+              },
+              "action": {
+                "type": "string",
+                "enum": ["create", "modify", "delete"],
+                "description": "Whether the file is new, changed, or removed."
+              },
+              "description": {
+                "type": "string",
+                "description": "One sentence describing what this IaC change provisions or removes."
+              }
+            }
+          }
+        },
+        "cicd_changes": {
+          "type": "array",
+          "description": "Changes required to the CI/CD pipeline.",
+          "items": {
+            "type": "object",
+            "required": ["step", "reason"],
+            "additionalProperties": false,
+            "properties": {
+              "step": {
+                "type": "string",
+                "description": "Name or description of the pipeline step to add, change, or remove."
+              },
+              "reason": {
+                "type": "string",
+                "description": "One sentence explaining why this pipeline change is necessary."
+              }
+            }
+          }
+        },
+        "secrets": {
+          "type": "array",
+          "description": "Secrets and environment variables required by the new components.",
+          "items": {
+            "type": "object",
+            "required": ["name", "description", "rotation_required"],
+            "additionalProperties": false,
+            "properties": {
+              "name": {
+                "type": "string",
+                "description": "Environment variable or secret name (e.g. 'DATABASE_URL', 'STRIPE_API_KEY')."
+              },
+              "description": {
+                "type": "string",
+                "description": "What this secret is used for."
+              },
+              "rotation_required": {
+                "type": "boolean",
+                "description": "Whether this secret requires a rotation policy."
+              }
+            }
+          }
+        },
+        "risks": {
+          "type": "array",
+          "description": "Deployment risks, including changes with no defined rollback strategy.",
+          "items": {
+            "type": "object",
+            "required": ["risk", "severity", "rollback_strategy"],
+            "additionalProperties": false,
+            "properties": {
+              "risk": {
+                "type": "string",
+                "description": "Description of the risk (e.g. 'schema migration is irreversible')."
+              },
+              "severity": {
+                "type": "string",
+                "enum": ["low", "medium", "high"],
+                "description": "Impact severity if the risk materialises."
+              },
+              "rollback_strategy": {
+                "type": "string",
+                "description": "How to recover if this change fails. Use 'none defined' if no strategy exists."
+              }
+            }
+          }
+        }
+      }
+    }
+  ]
+}
