@@ -2,7 +2,7 @@
 
 This file defines the default agent pipeline. It is always loaded first.
 
-If `agents/extensions/workflow.md` exists, it is loaded on top: sections
+If `agents-extensions/workflow.md` exists, it is loaded on top: sections
 defined there override the matching sections here. Sections not present in
 the extension remain active from this file.
 

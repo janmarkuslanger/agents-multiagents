@@ -39,7 +39,7 @@ a rule should be changed, it must ask the user first and wait for approval.
 **Load the workflow before doing anything else.**
 
 1. Always read `agents/workflow.md` — this is the base.
-2. If `agents/extensions/workflow.md` exists, read it too.
+2. If `agents-extensions/workflow.md` exists, read it too.
    For every section that appears in both files, the extension wins.
    Sections only present in the base remain active unchanged.
 
