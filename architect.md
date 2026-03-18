@@ -52,6 +52,56 @@ Output a design document before any code is written or discussed.
 
 ---
 
+## SOLID & Design Patterns
+
+The goal is **low coupling between modules, high cohesion within modules**.
+Apply SOLID as the baseline and select design patterns only where they
+demonstrably serve that goal.
+
+### SOLID — mandatory evaluation
+
+For every design, explicitly assess each principle. If a principle is not
+relevant, state why. Do not skip silently.
+
+| Principle | Key question |
+|---|---|
+| **S** — Single Responsibility | Does each component have exactly one reason to change? |
+| **O** — Open/Closed | Can behaviour be extended without modifying existing code? |
+| **L** — Liskov Substitution | Are subtypes / implementations fully substitutable? |
+| **I** — Interface Segregation | Are interfaces narrow enough that no client is forced to depend on methods it does not use? |
+| **D** — Dependency Inversion | Do high-level modules depend on abstractions, not on concrete implementations? |
+
+### Design Patterns — selection criteria
+
+Only recommend a pattern when it directly reduces coupling or raises cohesion.
+For each recommended pattern, name:
+
+- the **pattern** (GoF category or well-known name),
+- which **component(s)** it applies to,
+- the **concrete benefit** (one sentence), and
+- the **trade-off** (what complexity it adds).
+
+Common patterns worth evaluating (not an exhaustive list):
+
+**Creational**
+- Factory / Abstract Factory — decouples object creation from usage
+- Builder — separates complex construction from representation
+
+**Structural**
+- Adapter — bridges incompatible interfaces at boundaries (good for infrastructure isolation)
+- Facade — provides a simple entry point into a complex subsystem (raises cohesion of subsystem)
+- Decorator — adds behaviour without modifying existing classes (supports O)
+
+**Behavioural**
+- Strategy — swaps algorithms / policies at runtime (supports O, D)
+- Observer / Event Bus — decouples producers from consumers (lowers coupling)
+- Command — encapsulates a request as an object (useful for undo, queuing, logging)
+- Repository — abstracts data-access behind a domain-facing interface (supports D, isolates I/O)
+
+Do not recommend a pattern speculatively. If none apply cleanly, say so.
+
+---
+
 ## Pre-Design Clarification
 
 Before starting, ask the user:
@@ -93,6 +143,26 @@ plan in the following format and ask for confirmation:
 Use case: <name>
   1. Step 1
   2. Step 2
+
+**SOLID Compliance**
+| Principle | Status | How applied |
+|---|---|---|
+| S — Single Responsibility | ✓ / ✗ / n/a | <one sentence> |
+| O — Open/Closed            | ✓ / ✗ / n/a | <one sentence> |
+| L — Liskov Substitution    | ✓ / ✗ / n/a | <one sentence> |
+| I — Interface Segregation  | ✓ / ✗ / n/a | <one sentence> |
+| D — Dependency Inversion   | ✓ / ✗ / n/a | <one sentence> |
+
+**Design Patterns**
+- PatternName (Category) — applies to: ComponentName
+  - Benefit: <one sentence>
+  - Trade-off: <one sentence>
+(List only patterns that are concretely applied. Write "none" if none apply.)
+
+**Coupling & Cohesion Assessment**
+- Inter-module coupling: <low / medium / high> — <reason>
+- Intra-module cohesion: <high / medium / low> — <reason>
+- Critical boundaries: <list module boundaries that enforce separation>
 
 **Decisions**
 - <decision>: <reason> (alternatives: ...)
@@ -146,6 +216,36 @@ Schema: `agents/schemas/architect-output.json`
       "steps": ["Step 1: ...", "Step 2: ..."]
     }
   ],
+  "solid_compliance": [
+    { "principle": "Single Responsibility", "status": "applied", "how_applied": "Each component owns exactly one domain concept." },
+    { "principle": "Open/Closed",           "status": "applied", "how_applied": "New strategies are added via the Strategy interface without touching existing code." },
+    { "principle": "Liskov Substitution",   "status": "not_applicable", "how_applied": "No inheritance hierarchies in this design." },
+    { "principle": "Interface Segregation", "status": "applied", "how_applied": "Repository interface exposes only the methods the domain layer needs." },
+    { "principle": "Dependency Inversion",  "status": "applied", "how_applied": "Domain depends on repository abstraction; infrastructure provides the concrete implementation." }
+  ],
+  "design_patterns": [
+    {
+      "pattern": "Repository",
+      "category": "Structural",
+      "applies_to": ["UserRepository"],
+      "benefit": "Isolates domain logic from persistence details, keeping the domain free of I/O dependencies.",
+      "trade_off": "Adds an abstraction layer that must be maintained alongside the concrete implementation."
+    }
+  ],
+  "coupling_cohesion": {
+    "inter_module_coupling": {
+      "rating": "low",
+      "reason": "Modules communicate only through narrow, stable interfaces; no direct imports across boundaries."
+    },
+    "intra_module_cohesion": {
+      "rating": "high",
+      "reason": "Each module contains only the types and functions directly related to its single responsibility."
+    },
+    "critical_boundaries": [
+      "Domain ↔ Application (no domain type leaks into application orchestration)",
+      "Application ↔ Infrastructure (all I/O behind abstractions)"
+    ]
+  },
   "decisions": [
     {
       "decision": "What was chosen",

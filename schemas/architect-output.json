@@ -2,13 +2,23 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "architect-output",
   "type": "object",
-  "required": ["problem", "components", "data_flow", "decisions", "open_questions", "assumptions"],
+  "required": ["problem", "components", "data_flow", "solid_compliance", "design_patterns", "coupling_cohesion", "decisions", "open_questions", "assumptions"],
   "additionalProperties": false,
   "properties": {
     "problem": {
       "type": "string",
       "minLength": 1,
       "description": "One paragraph describing what is being solved and why."
+    },
+    "quality_requirements": {
+      "type": "array",
+      "items": { "type": "string" },
+      "description": "Non-functional requirements such as performance, maintainability, reliability."
+    },
+    "constraints": {
+      "type": "array",
+      "items": { "type": "string" },
+      "description": "Hard constraints: tech stack, team size, deadlines, integrations."
     },
     "components": {
       "type": "array",
@@ -44,6 +54,107 @@
             "items": { "type": "string" },
             "minItems": 1
           }
+        }
+      }
+    },
+    "solid_compliance": {
+      "type": "array",
+      "description": "Explicit assessment of each SOLID principle for this design.",
+      "minItems": 5,
+      "maxItems": 5,
+      "items": {
+        "type": "object",
+        "required": ["principle", "status", "how_applied"],
+        "additionalProperties": false,
+        "properties": {
+          "principle": {
+            "type": "string",
+            "enum": [
+              "Single Responsibility",
+              "Open/Closed",
+              "Liskov Substitution",
+              "Interface Segregation",
+              "Dependency Inversion"
+            ]
+          },
+          "status": {
+            "type": "string",
+            "enum": ["applied", "not_applicable", "violated"],
+            "description": "Whether the principle is actively applied, not relevant, or violated."
+          },
+          "how_applied": {
+            "type": "string",
+            "minLength": 1,
+            "description": "One sentence explaining how the principle is satisfied or why it is not applicable."
+          }
+        }
+      }
+    },
+    "design_patterns": {
+      "type": "array",
+      "description": "Design patterns concretely applied in this design. Empty array if none apply.",
+      "items": {
+        "type": "object",
+        "required": ["pattern", "category", "applies_to", "benefit", "trade_off"],
+        "additionalProperties": false,
+        "properties": {
+          "pattern": {
+            "type": "string",
+            "minLength": 1,
+            "description": "Name of the design pattern (e.g. Repository, Strategy, Factory)."
+          },
+          "category": {
+            "type": "string",
+            "enum": ["Creational", "Structural", "Behavioural"],
+            "description": "GoF category of the pattern."
+          },
+          "applies_to": {
+            "type": "array",
+            "items": { "type": "string" },
+            "minItems": 1,
+            "description": "Component name(s) where this pattern is used."
+          },
+          "benefit": {
+            "type": "string",
+            "minLength": 1,
+            "description": "One sentence: concrete coupling/cohesion benefit this pattern provides."
+          },
+          "trade_off": {
+            "type": "string",
+            "minLength": 1,
+            "description": "One sentence: what complexity or overhead this pattern introduces."
+          }
+        }
+      }
+    },
+    "coupling_cohesion": {
+      "type": "object",
+      "required": ["inter_module_coupling", "intra_module_cohesion", "critical_boundaries"],
+      "additionalProperties": false,
+      "description": "Summary assessment of the coupling and cohesion characteristics.",
+      "properties": {
+        "inter_module_coupling": {
+          "type": "object",
+          "required": ["rating", "reason"],
+          "additionalProperties": false,
+          "properties": {
+            "rating": { "type": "string", "enum": ["low", "medium", "high"] },
+            "reason": { "type": "string", "minLength": 1 }
+          }
+        },
+        "intra_module_cohesion": {
+          "type": "object",
+          "required": ["rating", "reason"],
+          "additionalProperties": false,
+          "properties": {
+            "rating": { "type": "string", "enum": ["low", "medium", "high"] },
+            "reason": { "type": "string", "minLength": 1 }
+          }
+        },
+        "critical_boundaries": {
+          "type": "array",
+          "items": { "type": "string" },
+          "description": "Module boundaries that are most important for maintaining low coupling."
         }
       }
     },
