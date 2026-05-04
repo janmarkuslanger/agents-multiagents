@@ -1,0 +1,49 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "tester-output",
+  "type": "object",
+  "required": ["coverage_assessment", "missing_tests", "verdict", "notes"],
+  "additionalProperties": false,
+  "properties": {
+    "coverage_assessment": {
+      "type": "string",
+      "minLength": 1,
+      "description": "One paragraph summarising what is covered and what is not."
+    },
+    "missing_tests": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["component", "case", "severity"],
+        "additionalProperties": false,
+        "properties": {
+          "component": {
+            "type": "string",
+            "minLength": 1,
+            "description": "Name of the design component that lacks coverage."
+          },
+          "case": {
+            "type": "string",
+            "minLength": 1,
+            "description": "Description of the scenario that is not tested."
+          },
+          "severity": {
+            "type": "string",
+            "enum": ["critical", "minor"],
+            "description": "critical blocks the Reviewer; minor is informational."
+          }
+        }
+      }
+    },
+    "verdict": {
+      "type": "string",
+      "enum": ["PASS", "FAIL"],
+      "description": "PASS only if missing_tests contains no critical entries."
+    },
+    "notes": {
+      "type": "array",
+      "items": { "type": "string" },
+      "description": "Observations that do not block but are worth noting."
+    }
+  }
+}

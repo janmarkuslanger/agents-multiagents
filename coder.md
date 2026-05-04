@@ -93,6 +93,8 @@ the fields.
 
 
 
+## Comments & Documentation
+
 - Do not use banner or section-separator comments (`# ---`, `# ===`).
 - Do not add section headers that merely restate the code structure.
 - Do not generate verbose docstrings with `Args:`, `Returns:`, or `Raises:`
