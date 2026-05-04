@@ -25,9 +25,6 @@ agents-multiagent/          # this repo, added as submodule at agents/
     validate_handoff.py  # Validate role output JSON against its schema
   examples/
     orchestrate.py       # Full pipeline via Anthropic API (with iteration loop)
-  mcp/
-    server.py            # MCP server — exposes workflow as tools
-    pyproject.toml       # MCP server dependencies
 
 your-project/               # your repository
   agents/                # submodule → agents-multiagent
@@ -157,61 +154,6 @@ subprocess.run(
 "
 ```
 
----
-
-## MCP server (Anthropic ecosystem / marketplace)
-
-Anthropic introduced the **Model Context Protocol (MCP)** as an open standard
-for connecting Claude to external tools. This repo ships an MCP server that
-exposes the workflow as four tools: `run_architect`, `run_coder`,
-`run_reviewer`, and `run_tester`.
-
-### Install
-
-```bash
-cd agents/mcp
-pip install -e .
-```
-
-### Register with Claude Code
-
-Add to `~/.claude.json` (global) or `.claude/settings.json` (project):
-
-```json
-{
-  "mcpServers": {
-    "agents-multiagent": {
-      "command": "python",
-      "args": ["/absolute/path/to/agents/mcp/server.py"]
-    }
-  }
-}
-```
-
-Claude Code will expose `run_architect`, `run_coder`, `run_reviewer`, and
-`run_tester` as callable tools in every session.
-
-### Register with Claude.ai
-
-In Claude.ai → Settings → Integrations, add an MCP server using SSE
-transport. Start the server with:
-
-```bash
-python agents/mcp/server.py --transport sse --port 8000
-```
-
-Then point Claude.ai at `http://localhost:8000/sse` (or your public URL).
-
-### Tool reference
-
-| Tool | Input | Returns |
-|---|---|---|
-| `run_architect` | `requirements`, optional `quality_requirements`, `constraints` | design document JSON |
-| `run_coder` | `design_document_json` | implementation JSON |
-| `run_reviewer` | `design_document_json`, `coder_output_json` | verdict JSON |
-| `run_tester` | `design_document_json`, `coder_output_json` | coverage JSON |
-
----
 
 ## Extending the workflow
 
